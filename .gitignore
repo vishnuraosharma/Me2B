@@ -20,3 +20,27 @@ pip-selfcheck.json
 
 # Ignore vscode files
 .vscode
+
+# Ignore PyCharm files
+.idea
+
+# Ignore Jupyter Notebook files
+.ipynb_checkpoints
+
+# Ignore mypy cache
+.mypy_cache
+
+# Ignore Pytest cache
+.pytest_cache
+
+# Ignore Python bytecode
+__pycache__/
+
+# Ignore logs
+logs/
+
+# Ignore Python virtual environment
+venv/
+```
+
+

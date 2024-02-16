@@ -1,28 +1,25 @@
+import Product_Model.product_audience as pa
+
 class Product:
 
     id_counter = 1
 
-    def __init__(self, name, price, description, category, competitor_products, integrations, features):
+    def __init__(self, name,  description, category, vertical, competitors, integrations, features, audience):
         self.id = Product.id_counter
         self.name = name
-        self.price = price
+        self.vertical = vertical
         self.description = description
         self.category = category
-        self.competitor_products = competitor_products
+        self.competitor_products = competitors
         self.integrations = integrations
         self.features = features
+        self.audience = audience
 
     def get_name(self):
         return self.name
 
     def set_name(self, name):
         self.name = name
-
-    def get_price(self):
-        return self.price
-
-    def set_price(self, price):
-        self.price = price
 
     def get_description(self):
         return self.description

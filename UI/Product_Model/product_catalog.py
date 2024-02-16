@@ -19,3 +19,4 @@ class ProductCatalog:
                 return product
 
         return None
+    

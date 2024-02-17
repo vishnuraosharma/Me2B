@@ -24,7 +24,6 @@ connection_parameters = {
 # fire up an instance of a snowflake connection
 new_session = Session.builder.configs(connection_parameters).create()
 
-
 # Read docs at https://docs.snowflake.com/en/developer-guide/snowpark/python/working-with-dataframes#label-snowpark-python-dataframe-construct for more
 df_table = new_session.table("CRUNCHBASE_BASIC_COMPANY_DATA.PUBLIC.ORGANIZATION_SUMMARY")
 df_table.show()

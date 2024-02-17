@@ -18,12 +18,8 @@ saas_product = p.Product("Automated Agent QA",
                         integrations= ["Salesforce", "Zendesk", "Intercom", "Gorgias", "Khoros", "Gladly", "Five9"],      
                         features=["Automate interaction selection using AI to highlight and score the most impactful customer conversations", "Agent Performance Review"
                         , "Conduct more reviews of customer interactions without having to listen to entire phone calls or comb through transcripts",
-                        "Easily pinpoint relevant parts of the conversation using the Loris Sentiment Graph to focus QA analyst reviews", "Conversational Analysis", """Automatically complete
-                            agent scorecards for effective communication skills, helping QA analysts do more reviews on more agents with less effort 
-                            Easily tailor your workflows, scorecards, and assignments based on what’s important to your customer experience
-                            Simplify everything QA – combining customer interactions, scorecards, agent coaching, and disputes into one platform""", 
-                            """Use AI to create objective scoring across all your agents – and across all your channels – for more uniform evaluation
-                            Spot trends and insights at the agent, team, and organizational level Use conversational insights to remove customer friction, improve your products, and develop new offerings""",
+                        "Easily pinpoint relevant parts of the conversation using the Loris Sentiment Graph to focus QA analyst reviews", "Conversational Analysis", """Automatically complete agent scorecards for effective communication skills, helping QA analysts do more reviews on more agents with less effort. Easily tailor your workflows, scorecards, and assignments based on what’s important to your customer experience. Simplify everything QA – combining customer interactions, scorecards, agent coaching, and disputes into one platform""", 
+                        """Use AI to create objective scoring across all your agents – and across all your channels – for more uniform evaluation. Spot trends and insights at the agent, team, and organizational level Use conversational insights to remove customer friction, improve your products, and develop new offerings""",
                         "Agent Coaching"], audience=p_audience)
 
 product_cat.add_product(saas_product)

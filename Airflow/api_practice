@@ -1,0 +1,28 @@
+import json
+import os
+from os.path import join, dirname
+from dotenv import load_dotenv
+import requests
+
+domain = 'apple.com'
+# Get the absolute path of the current script file
+script_path = os.path.abspath(os.getcwd())
+print (script_path)
+# Construct the path to the .env file
+dotenv_path = join(script_path, '.env')
+load_dotenv(dotenv_path)
+
+api_key = os.getenv('BUILDWITH_API_KEY')
+
+
+print (api_key)
+url = f'https://api.builtwith.com/v19/api.json?KEY={api_key}&LOOKUP={domain}'
+
+response = requests.get(url)
+data = response.json()
+
+# Export JSON data to a file
+with open('apple_data.json', 'w') as f:
+    f.write(json.dumps(data, indent=4))
+
+    

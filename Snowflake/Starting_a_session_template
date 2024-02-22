@@ -7,6 +7,7 @@ from snowflake.snowpark import Session
 # Get the absolute path of the current script file
 script_path = os.path.abspath(os.getcwd() + os.sep + os.pardir)
 
+print (script_path)
 # Construct the path to the .env file
 dotenv_path = join(script_path, '.env')
 load_dotenv(dotenv_path)

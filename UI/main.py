@@ -4,7 +4,14 @@ import Product_Model.product_catalog as pc
 import Product_Model.product_audience as pa
 import json
 import pickle
-
+import os
+from os.path import join
+from dotenv import load_dotenv
+from openai import OpenAI
+import csv
+import time
+import csv
+import pandas as pd
 
 # Create a sample SAAS product and add it to the product catalog
 p_audience = pa.ProductAudience("Companies with a strong digital presence that pride themselves in Customer Service.", "United States", {'min': 20, 'max':50000}, ["Salesforce", "Zendesk", "Intercom", "Gorgias", "Khoros", "Gladly", "Five9"], 
@@ -27,41 +34,218 @@ product_cat.add_product(saas_product)
 # Serialize the product catalog to a json string
 product_cat_json = json.dumps(product_cat, default=lambda o: o.__dict__, indent=2)
 
-print (product_cat_json)
-# Beautify the json string
+
+def start_new_thread():
+    """
+    Reset the chat history to start a new thread.
+    This function clears the existing messages and adds a new initial message from the assistant.
+    """
+    st.session_state.start_chat = True
+    thread = st.session_state.client.beta.threads.create()
+    st.session_state.thread_id = thread.id
+    st.session_state.messages = []
+    
 
 
-# Dump the json of the product catalog
-st.write(product_cat_json)
+talk, view, upload = st.tabs(["Talk to Assistant", "View Leads", "Upload Product Catalog"])
+with talk:
+    if 'fakedata' not in st.session_state:
+        st.session_state.fakedata = pd.DataFrame(csv.reader(open('faker/fake_matches.csv', 'r')), columns = ['Company', 'Product Match','Match Strength', 'Vertical', 'Competitors', 'Integrations'])
+        st.session_state.row = 1
+        # drop the first row
+        st.session_state.fakedata = st.session_state.fakedata.drop(0)
+    if 'company' not in st.session_state:
+        if 'productmatch' not in st.session_state:
+            if 'vertical' not in st.session_state:
+                if 'competitors' not in st.session_state:
+                    if 'integrations' not in st.session_state:
+                        # read the faker data from csv as pandas df
+                        print("first row")
+                        st.session_state.company = (st.session_state.fakedata)['Company'][st.session_state.row]
+                        st.session_state.productmatch = (st.session_state.fakedata)['Product Match'][st.session_state.row]
+                        st.session_state.vertical = (st.session_state.fakedata)['Vertical'][st.session_state.row]
+                        st.session_state.competitors = (st.session_state.fakedata)['Competitors'][st.session_state.row].split(',')
+                        st.session_state.integrations = (st.session_state.fakedata)['Integrations'][st.session_state.row].split(',')
+                        st.session_state.match_strength = int((st.session_state.fakedata)['Match Strength'][st.session_state.row])
+
+    # Populate the left column with information
+    st.sidebar.title('Lead Profile')
+    st.sidebar.header('Overview')
+    # Add more widgets to show the details like ID, Agent Name, etc.
+    st.sidebar.subheader(f'Company Match')
+    st.sidebar.write(st.session_state.company)
+    st.sidebar.empty()
+    st.sidebar.subheader(f'Product Match')
+    st.sidebar.write(st.session_state.productmatch)
+    st.sidebar.empty()
+    st.sidebar.subheader(f'Match Strength')
+    st.sidebar.slider('', 1, 5, st.session_state.match_strength)
+    st.sidebar.empty()
+    st.sidebar.subheader(f'Vertical')
+    st.sidebar.write(st.session_state.vertical)
+    st.sidebar.empty()
+    st.sidebar.subheader(f'Competitors')
+    st.sidebar.write(st.session_state.competitors)
+    st.sidebar.empty()
+    st.sidebar.subheader(f'Integrations')
+    st.sidebar.write(st.session_state.integrations)
 
 
-# def add_product(product_name):
-#     # Add the product to the database or perform any other necessary actions
-#     st.write(f"Added product: {product_name}")
+    # Add a next button
+    if st.sidebar.button('Next'):
+        start_new_thread()
+        st.write(st.session_state.row)
+        st.session_state.row = st.session_state.row + 1
+        # Read faker data from csv in faker folder
+        st.session_state.company = (st.session_state.fakedata)['Company'][st.session_state.row]
+        st.session_state.productmatch = (st.session_state.fakedata)['Product Match'][st.session_state.row]
+        st.session_state.vertical = (st.session_state.fakedata)['Vertical'][st.session_state.row]
+        st.session_state.competitors = (st.session_state.fakedata)['Competitors'][st.session_state.row].split(',')
+        st.session_state.integrations = (st.session_state.fakedata)['Integrations'][st.session_state.row].split(',')
+        st.session_state.match_strength = int((st.session_state.fakedata)['Match Strength'][st.session_state.row])
+        st.rerun()
 
-# def remove_product(product_name):
-#     # Remove the product from the database or perform any other necessary actions
-#     st.write(f"Removed product: {product_name}")
+    # Add a previous button
+    if st.sidebar.button('Previous'):
+        start_new_thread()
+        if st.session_state.row > 0:
+            st.session_state.row = st.session_state.row - 1
+        # Read faker data from csv in faker folder
+        st.session_state.company = (st.session_state.fakedata)['Company'][st.session_state.row]
+        st.session_state.productmatch = (st.session_state.fakedata)['Product Match'][st.session_state.row]
+        st.session_state.vertical = (st.session_state.fakedata)['Vertical'][st.session_state.row]
+        st.session_state.competitors = (st.session_state.fakedata)['Competitors'][st.session_state.row].split(',')
+        st.session_state.integrations = (st.session_state.fakedata)['Integrations'][st.session_state.row].split(',')
+        st.session_state.match_strength = int((st.session_state.fakedata)['Match Strength'][st.session_state.row])
+        st.rerun()
 
-# st.title("Product Management App")
 
-# # Sidebar
-# st.sidebar.header("Actions")
-# action = st.sidebar.selectbox("Select an action", ["Add Product", "Remove Product"])
+    # Get the absolute path of the current script file
+    script_path = os.path.abspath(os.getcwd() + os.sep + os.pardir)
 
-# if action == "Add Product":
-#     product_name = st.text_input("Enter product name")
-#     if st.button("Add"):
-#         add_product(product_name)
+    print (script_path)
+    # Construct the path to the .env file
+    dotenv_path = join(script_path, '.env')
+    load_dotenv(dotenv_path)
+    #Set OpenAI API key from Streamlit secrets
+    # Initialize OpenAI client with your API key
+    if 'client' not in st.session_state:
+        st.session_state.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# elif action == "Remove Product":
-#     product_name = st.text_input("Enter product name")
-#     if st.button("Remove"):
-#         remove_product(product_name)
 
-# # Display all products in st.table
-# st.header("Product Catalog")
-# product_data = []
-# for product in product_cat.products:
-#     product_data.append([product.id, product.name, product.price, product.description, product.category])
-# st.table(product_data)
+
+    # # Set a default model
+    # if "openai_model" not in st.session_state:
+    #     st.session_state["openai_model"] = "gpt-3.5-turbo"
+
+
+    # assistant = client.beta.assistants.create(
+    # name="Pitch Bot",
+    # instructions=f"""You are an B2B business development representative bot. You are an expert on all of Loris products and services 
+    # in your knowledge base and know how to make an excellent, concise cold email or linkedin message to outreach to a company.
+
+    # Read through Loris's product profile {product_cat_json}. Also keep Loris' competitors {st.session_state.competitors} in mind.
+
+    # Use the information to write a cold email or linkedin message to the company {st.session_state.company} to pitch a product related to {st.session_state.productmatch}.
+
+    # For each prospect, you will think of 3 angles to message someone at the prospect's company based on the ICP below. One for a low-level employee, one for middle-management, and one for the c-suite. Based on user input, you will craft the message.
+    # """,
+    # model=st.session_state["openai_model"],
+    # )
+
+    assistant_id = "asst_CcvPt3JAQEe2jUsIITLK3aJo"
+
+    if "start_chat" not in st.session_state:
+        st.session_state.start_chat = True
+    if "thread_id" not in st.session_state:
+        st.session_state.thread_id = None
+
+
+    st.title("Me2B Bot")
+    st.write("Your helpful outreach bot.")
+
+
+    if st.session_state.start_chat:
+        if "openai_model" not in st.session_state:
+            st.session_state.openai_model = "gpt-4-1106-preview"
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
+        
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+
+        if prompt := st.chat_input("Who would you like to contact?"):
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            with st.chat_message("user"):
+                st.markdown(prompt)
+
+            st.session_state.client.beta.threads.messages.create(
+                    thread_id=st.session_state.thread_id,
+                    role="user",
+                    content=prompt
+                )
+            
+            run = st.session_state.client.beta.threads.runs.create(
+                thread_id=st.session_state.thread_id,
+                assistant_id=assistant_id,
+                instructions=f"""You are an B2B business development representative bot. You are an expert on all of Loris products and services 
+                                in your knowledge base and know how to make an excellent, concise cold email or linkedin message to outreach to a company.
+
+                                Read through Loris's product profile {product_cat_json}. Mention Loris' competitors {st.session_state.competitors} in your response and why Loris is a better solution.
+
+                                Use the information to write a cold email or linkedin message to the company {st.session_state.company} to pitch a product related to {st.session_state.productmatch}. Please mention a specific integration in this list {st.session_state.integrations[0]} in your message.
+
+                                For each prospect, you will think of 3 angles to message someone at the prospect's company based on the ICP below. One for a low-level employee, one for middle-management, and one for the c-suite. Based on user input, you will craft the message.
+                                """
+            )
+
+            while run.status != 'completed':
+                time.sleep(1)
+                run = st.session_state.client.beta.threads.runs.retrieve(
+                    thread_id=st.session_state.thread_id,
+                    run_id=run.id
+                )
+            messages = st.session_state.client.beta.threads.messages.list(
+                thread_id=st.session_state.thread_id
+            )
+
+            # Process and display assistant messages
+            assistant_messages_for_run = [
+                message for message in messages 
+                if message.run_id == run.id and message.role == "assistant"
+            ]
+            for message in assistant_messages_for_run:
+                st.session_state.messages.append({"role": "assistant", "content": message.content[0].text.value})
+                with st.chat_message("assistant"):
+                    st.markdown(message.content[0].text.value)
+
+
+    # if st.button("Exit Chat"):
+    #     st.session_state.messages = []  # Clear the chat history
+    #     st.session_state.start_chat = False  # Reset the chat state
+    #     st.session_state.thread_id = None
+    #     st.rerun()
+    
+    if st.button("Restart Chat"):
+        st.session_state.start_chat = True
+        thread = st.session_state.client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+        st.session_state.messages = []
+        st.rerun()
+
+st.write(st.session_state)
+
+with view:
+    st.title('View Leads')
+    st.dataframe(
+        st.session_state.fakedata,
+        column_config={
+            "Company": "Company",
+            "Match Strength": st.column_config.NumberColumn(
+                "Match Strength",
+                format="%d ⭐",
+            ),
+        },
+        hide_index=True,
+    )

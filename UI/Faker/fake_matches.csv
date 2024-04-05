@@ -1,0 +1,51 @@
+﻿Company,Product Match,Match Strength,Vertical,Competitors,Integrations
+Marshall LLC,Live Chat Support,3,Healthcare,"['HubSpot Service Hub', 'Freshdesk', 'Intercom', 'Salesforce Service Cloud', 'Zendesk']",['Hootsuite']
+White and Sons,Email Ticketing System,5,E-commerce,"['Freshdesk', 'Salesforce Service Cloud', 'Zendesk', 'HubSpot Service Hub', 'Intercom']",['SAP ERP']
+Duncan and Sons,Voice Automation,5,Telecommunications,"['Salesforce Service Cloud', 'Zendesk']","['SAP ERP', 'Hootsuite', 'Salesforce CRM', 'Google Analytics', 'Mailchimp']"
+Johnson-Baker,Live Chat Support,3,Healthcare,"['Freshdesk', 'Intercom']",['Mailchimp']
+Brown and Sons,Voice Automation,3,Telecommunications,"['HubSpot Service Hub', 'Salesforce Service Cloud', 'Freshdesk', 'Zendesk']","['SAP ERP', 'Hootsuite']"
+Simon and Sons,Social Media Management,3,Finance,"['Intercom', 'HubSpot Service Hub', 'Zendesk']","['Salesforce CRM', 'Google Analytics']"
+"Richards, Gentry and Smith",Email Ticketing System,5,Telecommunications,"['Zendesk', 'Freshdesk', 'Salesforce Service Cloud']","['Mailchimp', 'Hootsuite', 'Google Analytics', 'SAP ERP']"
+"Richards, Gentry and Smith",Voice Automation,2,Finance,"['Intercom', 'Salesforce Service Cloud', 'HubSpot Service Hub', 'Zendesk']",['Mailchimp']
+"Wallace, Rivera and Carter",Email Ticketing System,2,Finance,['Zendesk'],"['Salesforce CRM', 'Google Analytics', 'Mailchimp', 'SAP ERP']"
+Vazquez LLC,Live Chat Support,3,Retail,"['HubSpot Service Hub', 'Salesforce Service Cloud', 'Freshdesk', 'Intercom', 'Zendesk']","['Salesforce CRM', 'Mailchimp']"
+Allen-Bailey,Voice Automation,3,Finance,"['Zendesk', 'Freshdesk', 'HubSpot Service Hub', 'Salesforce Service Cloud', 'Intercom']","['Salesforce CRM', 'Mailchimp', 'SAP ERP']"
+"Moyer, Mcfarland and Butler",Live Chat Support,2,Healthcare,"['Freshdesk', 'HubSpot Service Hub', 'Zendesk', 'Intercom', 'Salesforce Service Cloud']","['Mailchimp', 'SAP ERP', 'Hootsuite', 'Salesforce CRM', 'Google Analytics']"
+Johnson Group,Social Media Management,5,Healthcare,"['Salesforce Service Cloud', 'HubSpot Service Hub', 'Zendesk', 'Freshdesk', 'Intercom']",['Salesforce CRM']
+Padilla-Welch,Live Chat Support,5,Finance,"['Intercom', 'Freshdesk']","['Hootsuite', 'Mailchimp', 'SAP ERP', 'Google Analytics']"
+Brown and Sons,Email Ticketing System,2,Finance,['Salesforce Service Cloud'],"['SAP ERP', 'Mailchimp']"
+"Mosley, Kline and Nicholson",Voice Automation,2,Retail,"['Zendesk', 'Salesforce Service Cloud']","['Hootsuite', 'Salesforce CRM', 'Google Analytics']"
+Smith Ltd,Email Ticketing System,3,E-commerce,"['HubSpot Service Hub', 'Intercom', 'Salesforce Service Cloud']","['Mailchimp', 'Salesforce CRM', 'Google Analytics', 'SAP ERP', 'Hootsuite']"
+"Stanley, Lester and Hughes",Email Ticketing System,3,Finance,['Salesforce Service Cloud'],['Salesforce CRM']
+Vazquez LLC,Voice Automation,2,Telecommunications,"['HubSpot Service Hub', 'Intercom']","['Mailchimp', 'SAP ERP', 'Google Analytics', 'Hootsuite']"
+Hood Inc,Live Chat Support,5,Retail,"['Salesforce Service Cloud', 'Freshdesk', 'Intercom', 'HubSpot Service Hub']",['Hootsuite']
+Oconnell-Smith,Voice Automation,3,E-commerce,"['Salesforce Service Cloud', 'Freshdesk', 'Zendesk', 'HubSpot Service Hub', 'Intercom']","['Mailchimp', 'Google Analytics']"
+Duncan and Sons,Email Ticketing System,5,Retail,"['Zendesk', 'Freshdesk']","['Mailchimp', 'Salesforce CRM']"
+"Jordan, Vargas and Wagner",Voice Automation,3,Telecommunications,"['Intercom', 'Zendesk', 'Salesforce Service Cloud', 'Freshdesk', 'HubSpot Service Hub']","['Mailchimp', 'SAP ERP', 'Salesforce CRM', 'Google Analytics']"
+"Wallace, Rivera and Carter",Live Chat Support,2,E-commerce,"['Intercom', 'Salesforce Service Cloud', 'Zendesk', 'Freshdesk']","['SAP ERP', 'Google Analytics', 'Hootsuite', 'Mailchimp']"
+Hood Inc,Email Ticketing System,3,Finance,"['Intercom', 'Freshdesk']","['Hootsuite', 'Google Analytics', 'Salesforce CRM', 'Mailchimp']"
+"Bowman, Thomas and Newton",Live Chat Support,2,Healthcare,"['HubSpot Service Hub', 'Intercom']","['Salesforce CRM', 'Mailchimp', 'SAP ERP']"
+Nicholson-Reed,Social Media Management,4,E-commerce,"['Freshdesk', 'HubSpot Service Hub', 'Salesforce Service Cloud', 'Intercom']","['Salesforce CRM', 'SAP ERP', 'Google Analytics', 'Mailchimp', 'Hootsuite']"
+Reed-Clark,Social Media Management,3,Healthcare,['Salesforce Service Cloud'],"['Google Analytics', 'Salesforce CRM', 'Hootsuite']"
+Taylor-Hanson,Voice Automation,3,Healthcare,"['Intercom', 'HubSpot Service Hub']","['Hootsuite', 'Salesforce CRM', 'Mailchimp']"
+Cameron and Sons,Social Media Management,2,Healthcare,"['Zendesk', 'Intercom', 'Freshdesk', 'Salesforce Service Cloud']","['Salesforce CRM', 'Hootsuite', 'SAP ERP', 'Google Analytics', 'Mailchimp']"
+Sullivan LLC,Live Chat Support,1,Healthcare,"['HubSpot Service Hub', 'Zendesk']",['Salesforce CRM']
+Price PLC,Voice Automation,4,Finance,"['Salesforce Service Cloud', 'Intercom']","['Mailchimp', 'Hootsuite']"
+"Jordan, Vargas and Wagner",Social Media Management,2,E-commerce,"['Salesforce Service Cloud', 'Intercom', 'HubSpot Service Hub', 'Zendesk']","['Salesforce CRM', 'Hootsuite', 'SAP ERP', 'Mailchimp', 'Google Analytics']"
+White and Sons,Voice Automation,4,Telecommunications,['Salesforce Service Cloud'],"['SAP ERP', 'Google Analytics', 'Hootsuite', 'Mailchimp', 'Salesforce CRM']"
+"Richards, Gentry and Smith",Live Chat Support,4,E-commerce,"['Freshdesk', 'Zendesk', 'Salesforce Service Cloud']","['Salesforce CRM', 'Hootsuite', 'Mailchimp', 'SAP ERP', 'Google Analytics']"
+"Mosley, Kline and Nicholson",Live Chat Support,4,Healthcare,"['Intercom', 'Zendesk', 'Freshdesk']","['Google Analytics', 'Mailchimp']"
+Allen-Bailey,Live Chat Support,2,E-commerce,"['Freshdesk', 'Zendesk', 'Salesforce Service Cloud', 'HubSpot Service Hub', 'Intercom']",['Google Analytics']
+"Lawson, Lamb and Cooper",Voice Automation,2,Finance,['Zendesk'],['Salesforce CRM']
+Taylor-Hanson,Social Media Management,2,E-commerce,"['Freshdesk', 'Salesforce Service Cloud', 'Intercom']","['Hootsuite', 'SAP ERP']"
+"Richards, Gentry and Smith",Voice Automation,4,Retail,"['Salesforce Service Cloud', 'HubSpot Service Hub']","['Mailchimp', 'Google Analytics', 'Hootsuite', 'SAP ERP', 'Salesforce CRM']"
+"Wallace, Rivera and Carter",Email Ticketing System,1,Telecommunications,"['HubSpot Service Hub', 'Intercom', 'Zendesk', 'Freshdesk', 'Salesforce Service Cloud']","['Salesforce CRM', 'Google Analytics']"
+White and Sons,Email Ticketing System,5,E-commerce,"['HubSpot Service Hub', 'Salesforce Service Cloud', 'Freshdesk', 'Intercom']","['SAP ERP', 'Mailchimp', 'Google Analytics', 'Salesforce CRM']"
+Horn-Jones,Social Media Management,5,Finance,"['HubSpot Service Hub', 'Salesforce Service Cloud']","['Google Analytics', 'Hootsuite']"
+Johnson Group,Social Media Management,1,Retail,"['Intercom', 'HubSpot Service Hub', 'Salesforce Service Cloud', 'Zendesk', 'Freshdesk']","['SAP ERP', 'Salesforce CRM', 'Hootsuite', 'Google Analytics', 'Mailchimp']"
+Cameron and Sons,Email Ticketing System,1,Healthcare,['Zendesk'],"['Mailchimp', 'Salesforce CRM', 'Google Analytics']"
+Scott-Murphy,Live Chat Support,5,Finance,"['Salesforce Service Cloud', 'Intercom']",['Salesforce CRM']
+Hood Inc,Social Media Management,1,Retail,"['Zendesk', 'Intercom']","['Salesforce CRM', 'Hootsuite', 'Google Analytics', 'SAP ERP', 'Mailchimp']"
+Smith PLC,Email Ticketing System,4,Telecommunications,['Intercom'],"['Google Analytics', 'Hootsuite', 'Salesforce CRM', 'Mailchimp']"
+"Strickland, White and Ramos",Voice Automation,1,E-commerce,"['Intercom', 'Salesforce Service Cloud', 'Zendesk']","['Google Analytics', 'Mailchimp', 'Hootsuite', 'SAP ERP']"
+Harris-Moore,Voice Automation,1,Healthcare,"['HubSpot Service Hub', 'Salesforce Service Cloud', 'Freshdesk', 'Zendesk']","['Salesforce CRM', 'Mailchimp', 'SAP ERP']"

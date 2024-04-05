@@ -41,6 +41,10 @@ logs/
 
 # Ignore Python virtual environment
 venv/
+
+# Ignore Python environment
+env/
+
+
 ```
-
-
+#

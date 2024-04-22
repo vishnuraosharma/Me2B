@@ -4,11 +4,8 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 from langchain_google_vertexai import ChatVertexAI
-from langchain.chains import LLMChain
 from langchain.memory import ConversationBufferMemory
-from langchain.chains import create_retrieval_chain
 import streamlit as st
-
 import json
 import pickle
 import os
@@ -23,7 +20,6 @@ import pandas as pd
 import requests
 from pinecone import Pinecone as PinconeDB
 from langchain_pinecone import Pinecone, PineconeVectorStore
-#from langchain_community.vectorstores import Pinecone as PineconeVectorStore
 from langchain.retrievers.multi_query import MultiQueryRetriever
 from langchain_groq import ChatGroq
 from sentence_transformers import SentenceTransformer
@@ -312,7 +308,7 @@ if 'product_data_tbl' not in st.session_state:
     st.session_state.company_data_tbl['TYPE'] = st.session_state.company_data_tbl['TYPE'].str.upper()
     st.session_state.company_data_tbl['INDUSTRY'] = st.session_state.company_data_tbl['INDUSTRY'].str.upper()
 
-talk, view, upload = st.tabs(["Me2B Bot", "Lead Dashboard", "Update Product Catalog"])
+talk, view, upload = st.tabs(["Me2B Bot", "Lead Dashboard", "Manage Products"])
 if 'prompt_template' not in st.session_state:
     st.session_state.prompt_template = """You are an B2B business development representative bot called me2b. You are an expert on making matches between product data and customers.  
                         You have two main functions:
@@ -322,6 +318,7 @@ if 'prompt_template' not in st.session_state:
                         First, read through this product profile ('{description}'), these key features ('{features}') and this price ({price}).
                         Next, read this description of a fictional company persona that might want to use this product ({potential_customers}). 
                         Finally, evaluate potential company matches below and highlight product features that are a good match and come up with a few reasons why the product is a good fit for the company. Comapny persona matches will arrive in the next system message.
+                        Make it seem like you found the potential company matches and are presenting them to the user.
                         For each match, write a few sentences about why the product is a good fit for the company.
                         Pick your favorite match and explain why it is the best fit in one or two sentences at the end of the message.
                         Ask the user if he wants to write a cold email to the company and which role the email should be addressed to.
@@ -352,29 +349,29 @@ with talk:
     st.session_state.msgs_mistral = StreamlitChatMessageHistory(key="langchain_messages_mistral")
     st.session_state.msgs_llama3 = StreamlitChatMessageHistory(key="langchain_messages_llama3")
     if len(st.session_state.msgs_open_ai.messages) == 0:
-        st.session_state.msgs_open_ai.add_ai_message(f"Hi! I'm Me2B Bot and I'm powered by GPT 3.5 Turbo. Are you ready to find a new {st.session_state.curr_prod} customer?")
+        st.session_state.msgs_open_ai.add_ai_message(f"Hi! I'm **Me2B Bot**, powered by *GPT 3.5 Turbo*. Are you ready to find a new **{st.session_state.curr_prod}** customer?")
     if len(st.session_state.msgs_claude.messages) == 0:
         st.session_state.msgs_claude.add_user_message("...")
-        st.session_state.msgs_claude.add_ai_message(f"Hi! I'm Me2B Bot and I'm powered by Claude 3.0. Are you ready to find a new {st.session_state.curr_prod} customer?")
+        st.session_state.msgs_claude.add_ai_message(f"Hi! I'm **Me2B Bot**, powered by *Claude 3.0*. Are you ready to find a new **{st.session_state.curr_prod}** customer?")
     if len(st.session_state.msgs_mistral.messages) == 0:
-        st.session_state.msgs_mistral.add_ai_message(f"Hi! I'm Me2B Bot and I'm powered by Mixtral 7B. Are you ready to find a new {st.session_state.curr_prod} customer?")
+        st.session_state.msgs_mistral.add_ai_message(f"Hi! I'm **Me2B Bot**, powered by *Mixtral 7B*. Are you ready to find a new **{st.session_state.curr_prod}** customer?")
     if len(st.session_state.msgs_llama3.messages) == 0:
-        st.session_state.msgs_llama3.add_ai_message(f"Hi! I'm Me2B Bot and I'm powered by Llama3. Are you ready to find a new {st.session_state.curr_prod} customer?")
+        st.session_state.msgs_llama3.add_ai_message(f"Hi! I'm **Me2B Bot**, powered by *Llama3*. Are you ready to find a new **{st.session_state.curr_prod}** customer?")
 
     
     # view_messages = st.expander("View the message contents in session state")
-
+    st.title("Me2B Bot")
     ###########################
     ### OpenAI
     ###########################
     if curr_model == "GPT 3.5 Turbo":
         if 'open_ai_refined_queries' not in st.session_state or 'open_ai_matches' not in st.session_state:
             with st.spinner(f"Generating Buyer Profiles for {st.session_state.curr_prod}..."):
-                st.session_state.open_ai_refined_queries = openAI_query_refiner( product_profile= st.session_state.product_profile_json, client= st.session_state.client)
+                st.session_state.open_ai_refined_queries = openAI_query_refiner(product_profile= st.session_state.product_profile_json, client= st.session_state.client)
                 
                 st.sidebar.subheader("Generated Potential Buyer Profiles")
                 st.sidebar.warning("""To match your product to a company, we use your product data to generate a variety of potential buyer profiles.\n
-                                            \nHit the **buzz** button to create some new ones.""")  
+                                            \nHit the **buzz** button to create new ones.""")  
             with st.spinner(f"Finding Matches for {st.session_state.curr_prod}..."):
                 st.sidebar.write(st.session_state.open_ai_refined_queries)
                 st.session_state.open_ai_matches = find_match_with_lang(st.session_state.open_ai_refined_queries, st.session_state.vectorstore)
@@ -383,8 +380,9 @@ with talk:
         else:
             st.sidebar.subheader("Generated Potential Buyer Profiles")
             st.sidebar.warning("""To match your product to a company, we use your product data to generate a variety of potential buyer profiles.\n
-                                            \nHit the **buzz** button to create some new ones.""")        
+                                            \nHit the **buzz** button to create new ones.""")        
             st.sidebar.write(st.session_state.open_ai_refined_queries)
+            input
             if st.sidebar.button("Buzz"):
                 del st.session_state.open_ai_refined_queries
                 del st.session_state.open_ai_matches
@@ -417,7 +415,7 @@ with talk:
 
         # If user inputs a new prompt, generate and draw a new response 
         if prompt := st.chat_input():
-            st.chat_message("human").write(prompt)
+            st.chat_message("human",avatar="👤").write(prompt)
             # Note: new messages are saved to history automatically by Langchain during run
             config = {"configurable": {"session_id": "any"}}
             response = chain_with_history.invoke({"question": prompt,
@@ -444,7 +442,7 @@ with talk:
                 st.session_state.claude_refined_queries = claude_query_refiner( product_profile= st.session_state.product_profile_json)
                 st.sidebar.subheader("Generated Potential Buyer Profiles")
                 st.sidebar.warning("""To match your product to a company, we use your product data to generate a variety of potential buyer profiles.\n
-                                            \nHit the **buzz** button to create some new ones.""")  
+                                            \nHit the **buzz** button to create new ones.""")  
                 st.sidebar.write(st.session_state.claude_refined_queries)
             with st.spinner(f"Finding Matches for {st.session_state.curr_prod}..."):
                 st.session_state.claude_matches = find_match_with_lang(st.session_state.claude_refined_queries, st.session_state.vectorstore)
@@ -453,7 +451,7 @@ with talk:
         else:
             st.sidebar.subheader("Generated Potential Buyer Profiles")
             st.sidebar.warning("""To match your product to a company, we use your product data to generate a variety of potential buyer profiles.\n
-                                            \nHit the **buzz** button to create some new ones.""")  
+                                            \nHit the **buzz** button to create new ones.""")  
             st.sidebar.write(st.session_state.claude_refined_queries)
             if st.sidebar.button("Buzz"):
                 del st.session_state.claude_refined_queries
@@ -487,7 +485,7 @@ with talk:
 
         # If user inputs a new prompt, generate and draw a new response
         if claude_prompt := st.chat_input():
-            st.chat_message("human").write(claude_prompt)
+            st.chat_message("human",avatar="👤").write(claude_prompt)
             # Note: new messages are saved to history automatically by Langchain during run
             config = {"configurable": {"session_id": "any"}}
             response = chain_with_history.invoke({"question": claude_prompt,
@@ -514,7 +512,7 @@ with talk:
                 st.session_state.mistrial_refined_queries = mistral_query_refiner( product_profile= st.session_state.product_profile_json)
                 st.sidebar.subheader("Generated Potential Buyer Profiles")
                 st.sidebar.warning("""To match your product to a company, we use your product data to generate a variety of potential buyer profiles.\n
-                                            \nHit the **buzz** button to create some new ones.""")  
+                                            \nHit the **buzz** button to create new ones.""")  
                 st.sidebar.write(st.session_state.mistrial_refined_queries)
             with st.spinner(f"Finding Matches for {st.session_state.curr_prod}..."):
                 st.session_state.mistrial_matches = find_match_with_lang(st.session_state.mistrial_refined_queries, st.session_state.vectorstore)
@@ -523,7 +521,7 @@ with talk:
         else:
             st.sidebar.subheader("Generated Potential Buyer Profiles")
             st.sidebar.warning("""To match your product to a company, we use your product data to generate a variety of potential buyer profiles.\n
-                                            \nHit the **buzz** button to create some new ones.""")          
+                                            \nHit the **buzz** button to create new ones.""")          
             st.sidebar.write(st.session_state.mistrial_refined_queries)
             if st.sidebar.button("Buzz"):
                 del st.session_state.mistrial_refined_queries
@@ -558,7 +556,7 @@ with talk:
 
         # If user inputs a new prompt, generate and draw a new response
         if mixtrial_prompt := st.chat_input():
-            st.chat_message("human").write(mixtrial_prompt)
+            st.chat_message("human",avatar="👤").write(mixtrial_prompt)
             # Note: new messages are saved to history automatically by Langchain during run
             config = {"configurable": {"session_id": "any"}}
             response = chain_with_history.invoke({"question": mixtrial_prompt,
@@ -580,7 +578,7 @@ with talk:
                 st.session_state.llama3_refined_queries = llama_query_refiner(product_profile= st.session_state.product_profile_json)
                 st.sidebar.subheader("Generated Potential Buyer Profiles")
                 st.sidebar.warning("""To match your product to a company, we use your product data to generate a variety of potential buyer profiles.\n
-                                            \nHit the **buzz** button to create some new ones.""")  
+                                            \nHit the **buzz** button to create new ones.""")  
                 st.sidebar.write(st.session_state.llama3_refined_queries)
             with st.spinner(f"Finding Matches for {st.session_state.curr_prod}..."):
                 st.session_state.llama3_matches = find_match_with_lang(st.session_state.llama3_refined_queries, st.session_state.vectorstore)
@@ -589,7 +587,7 @@ with talk:
         else:
             st.sidebar.subheader("Generated Potential Buyer Profiles")
             st.sidebar.warning("""To match your product to a company, we use your product data to generate a variety of potential buyer profiles.\n
-                                            \nHit the **buzz** button to create some new ones.""")      
+                                            \nHit the **buzz** button to create new ones.""")      
             st.sidebar.write(st.session_state.llama3_refined_queries)
             if st.sidebar.button("Buzz"):
                 del st.session_state.llama3_refined_queries 
@@ -623,7 +621,7 @@ with talk:
 
         # If user inputs a new prompt, generate and draw a new response
         if llama_prompt := st.chat_input():
-            st.chat_message("human").write(llama_prompt)
+            st.chat_message("human",avatar="👤").write(llama_prompt)
             # Note: new messages are saved to history automatically by Langchain during run
             config = {"configurable": {"session_id": "any"}}
             response = chain_with_history.invoke({"question": llama_prompt,
@@ -752,11 +750,11 @@ with view:
         return selected_rows.drop('SELECT', axis=1)
     
     dashboard = st.container()
-    dashboard.header("Lead Dashboard")
-    dashboard.warning("Analyze Me2B's entire pool of company data to **find the right leads for your product.** \n\nShare leads that match your ICP with *Me2B Bot* to generate the right content for the right person :bee:.")
-    
-    st.subheader("Filter & Share with Me2B Bot")
-    st.warning("Filter by company attributes and & select companies to share with Me2B Bot :bee:")
+    dashboard.title("Lead Dashboard")
+    dashboard.warning("Analyze Me2B's entire pool of company data to **find the right leads for your product.**")
+    st.divider()
+    st.header("Filter & Share with Me2B Bot")
+    st.warning("Filter by company attributes.  \n\nShare leads that match your ICP with *Me2B Bot* to **generate the right content for the right companies** :bee:.")
     filtered_df = (filter_dataframe(st.session_state.company_data_tbl[['NAME','TYPE','INDUSTRY','SIZE','FOUNDED','COUNTRY','CITY','STATE', 'UID']]))
 
     selected_companies = dataframe_with_selections(filtered_df)

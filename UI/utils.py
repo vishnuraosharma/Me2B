@@ -17,7 +17,10 @@ from langchain.chains import LLMChain
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import HumanMessage, SystemMessage
 
-
+st.session_state.openai_context = ""
+st.session_state.anthropic_context = ""
+st.session_state.mixtral_context = ""
+st.session_state.llama_context = ""
 
 
 def del_environment_variables():
@@ -89,7 +92,9 @@ def openAI_query_refiner(product_profile, client: OpenAI):
     completion = dict(completion)
     choices = completion.get('choices')
 
-    return choices[0].message.content
+    response = choices[0].message.content
+    st.session_state.openai_context += response
+    return response
 
 def claude_query_refiner(product_profile):
     chat = ChatAnthropic(model='claude-3-opus-20240229', api_key=anthropic_api_key, temperature=.4)
@@ -102,6 +107,10 @@ def claude_query_refiner(product_profile):
         You can speculate certain geographic locations that may be interested in the product.
 
         Be very specific in your responses and separate each persona with a new line.
+
+        MAKE SURE YOUR RESPONSES ARE RELEVANT TO THE PRODUCT AND NOT GENERIC.
+
+        MAKE SURE YOUR RESPONSES ARE DISTINCT FROM PREVIOUS RESPONSES AND DO NOT REPEAT.
         
         PRODUCT DATA:
         Product Name: {product_profile['Product_name']}
@@ -110,6 +119,9 @@ def claude_query_refiner(product_profile):
         Sample Pitch: {product_profile['Sales pitch']}
         Product Profile: :{product_profile['Product persona']}
         Product Price: {product_profile['Price']}
+
+        PREVIOUS RESPONSES:
+        ({st.session_state.anthropic_context})
         """
     
     human = f"Generate 3 buyer profiles for {product_profile['Product_name']}. Put results in a numbered list. Do not call them anything, just list the paragraphs. Append each result with a newline character."
@@ -117,7 +129,9 @@ def claude_query_refiner(product_profile):
             SystemMessage(content=template),
             HumanMessage(content=human),
         ]
-    return chat.invoke(messages).content
+    response = chat.invoke(messages).content
+    st.session_state.anthropic_context += response
+    return response
 
 
 def mistral_query_refiner(product_profile):
@@ -132,6 +146,10 @@ def mistral_query_refiner(product_profile):
         You can speculate certain geographic locations that may be interested in the product.
 
         Be very specific in your responses and separate each persona with a new line.
+
+        MAKE SURE YOUR RESPONSES ARE RELEVANT TO THE PRODUCT AND NOT GENERIC.
+
+        MAKE SURE YOUR RESPONSES ARE DISTINCT FROM PREVIOUS RESPONSES AND DO NOT REPEAT.
         
         PRODUCT DATA:
         Product Name: {product_profile['Product_name']}
@@ -140,14 +158,19 @@ def mistral_query_refiner(product_profile):
         Sample Pitch: {product_profile['Sales pitch']}
         Product Profile: :{product_profile['Product persona']}
         Product Price: {product_profile['Price']}
+
+        PREVIOUS RESPONSES:
+        ({st.session_state.mixtral_context})
         """
     
-    human = f"Generate 3 buyer profiles for {product_profile['Product_name']}. Put results in a numbered list. Do not call them anything, just list the paragraphs. Append each result with a newline character."
+    human = f"Generate 3 buyer profiles for {product_profile['Product_name']}. Put results in a numbered list. Do not call them anything, just list the paragraphs. Do not say anything else, just return the list. Append each result with a newline character."
     messages = [
             SystemMessage(content=template),
             HumanMessage(content=human),
         ]
-    return chat.invoke(messages).content
+    response = chat.invoke(messages).content
+    st.session_state.mixtral_context += response
+    return response
 
 def llama_query_refiner(product_profile):
     chat =  ChatGroq(temperature=.5, model_name="llama3-70b-8192")
@@ -160,6 +183,10 @@ def llama_query_refiner(product_profile):
         You can speculate certain geographic locations that may be interested in the product.
 
         Be very specific in your responses and separate each persona with a new line.
+
+        MAKE SURE YOUR RESPONSES ARE RELEVANT TO THE PRODUCT AND NOT GENERIC.
+
+        MAKE SURE YOUR RESPONSES ARE DISTINCT FROM PREVIOUS RESPONSES AND DO NOT REPEAT.
         
         PRODUCT DATA:
         Product Name: {product_profile['Product_name']}
@@ -168,20 +195,24 @@ def llama_query_refiner(product_profile):
         Sample Pitch: {product_profile['Sales pitch']}
         Product Profile: :{product_profile['Product persona']}
         Product Price: {product_profile['Price']}
+
+        PREVIOUS RESPONSES:
+        ({st.session_state.llama_context})
         """
     
-    human = f"Generate 3 buyer profiles for {product_profile['Product_name']}. Put results in a numbered list. Do not call them anything, just list the paragraphs. Append each result with a newline character."
+    human = f"Generate 3 buyer profiles for {product_profile['Product_name']}. Put results in a numbered list. Do not call them anything, just list the paragraphs. Do not say anything else, just return the list. Append each result with a newline character."
     messages = [
             SystemMessage(content=template),
             HumanMessage(content=human),
         ]
-    print(chat.invoke(messages).content)
-    return chat.invoke(messages).content
+    response = chat.invoke(messages).content
+    st.session_state.llama_context += response
+    return response
 
 
 def fill_template(product_profile):
      template = f"""
-        Your task is to generate 3 different company personas for the given products. Each persona should be an short sentence that describes a company that would be interested in buying the product.
+         Your task is to generate 3 different company personas for the given products. Each persona should be an short sentence that describes a company that would be interested in buying the product.
         Each query MUST tackle the question from a different viewpoint, we want to get a variety of RELEVANT search results.
 
         The goal is to cover distinct company profiles. The profiles should be short paragraph descriptions and mention the industry, company size, the company's main focus.
@@ -189,6 +220,10 @@ def fill_template(product_profile):
         You can speculate certain geographic locations that may be interested in the product.
 
         Be very specific in your responses and separate each persona with a new line.
+
+        MAKE SURE YOUR RESPONSES ARE RELEVANT TO THE PRODUCT AND NOT GENERIC.
+
+        MAKE SURE YOUR RESPONSES ARE DISTINCT FROM PREVIOUS RESPONSES AND DO NOT REPEAT.
         
         PRODUCT DATA:
         Product Name: {product_profile['Product_name']}
@@ -197,9 +232,12 @@ def fill_template(product_profile):
         Sample Pitch: {product_profile['Sales pitch']}
         Product Profile: :{product_profile['Product persona']}
         Product Price: {product_profile['Price']}
+
+        PREVIOUS RESPONSES:
+        ({st.session_state.openai_context})
         """
      return [
         {"role": "system", "content": template},
-        {"role": "user", "content": f"Generate 3 buyer profiles for {product_profile['Product_name']}. Put results in a numbered list. Do not call them anything, just list the paragraphs. Append each result with a newline character."}
+        {"role": "user", "content": f"Generate 3 buyer profiles for {product_profile['Product_name']}. Put results in a numbered list. Do not call them anything, just list the paragraphs. Do not say anything else, just return the list. Append each result with a newline character."}
     ]
 

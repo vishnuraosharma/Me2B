@@ -1,3 +1,4 @@
+from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from sentence_transformers import SentenceTransformer
 from pinecone import Pinecone as PinconeDB
@@ -83,7 +84,7 @@ def openAI_query_refiner(product_profile, client: OpenAI):
     messages = fill_template(product_profile),
     model="gpt-3.5-turbo-1106",
     max_tokens=250,
-    temperature=0.3
+    temperature=0.6
     )
     completion = dict(completion)
     choices = completion.get('choices')
@@ -91,7 +92,7 @@ def openAI_query_refiner(product_profile, client: OpenAI):
     return choices[0].message.content
 
 def claude_query_refiner(product_profile):
-    chat = ChatAnthropic(model='claude-3-opus-20240229', api_key=anthropic_api_key)
+    chat = ChatAnthropic(model='claude-3-opus-20240229', api_key=anthropic_api_key, temperature=.4)
     template = f"""
         Your task is to generate 3 different company personas for the given products. Each persona should be an short sentence that describes a company that would be interested in buying the product.
         Each query MUST tackle the question from a different viewpoint, we want to get a variety of RELEVANT search results.
@@ -116,13 +117,40 @@ def claude_query_refiner(product_profile):
             SystemMessage(content=template),
             HumanMessage(content=human),
         ]
-    print(chat.invoke(messages).content)
     return chat.invoke(messages).content
 
 
 def mistral_query_refiner(product_profile):
     chat =  ChatOpenAI(api_key=together_api_key, base_url="https://api.together.xyz/v1",
-                model="mistralai/Mixtral-8x7B-Instruct-v0.1",)
+                model="mistralai/Mixtral-8x7B-Instruct-v0.1", temperature=.4)
+    template = f"""
+        Your task is to generate 3 different company personas for the given products. Each persona should be an short sentence that describes a company that would be interested in buying the product.
+        Each query MUST tackle the question from a different viewpoint, we want to get a variety of RELEVANT search results.
+
+        The goal is to cover distinct company profiles. The profiles should be short paragraph descriptions and mention the industry, company size, the company's main focus.
+
+        You can speculate certain geographic locations that may be interested in the product.
+
+        Be very specific in your responses and separate each persona with a new line.
+        
+        PRODUCT DATA:
+        Product Name: {product_profile['Product_name']}
+        Product Description: {product_profile['Description']}
+        Product Features: {product_profile['Features']}
+        Sample Pitch: {product_profile['Sales pitch']}
+        Product Profile: :{product_profile['Product persona']}
+        Product Price: {product_profile['Price']}
+        """
+    
+    human = f"Generate 3 buyer profiles for {product_profile['Product_name']}. Put results in a numbered list. Do not call them anything, just list the paragraphs. Append each result with a newline character."
+    messages = [
+            SystemMessage(content=template),
+            HumanMessage(content=human),
+        ]
+    return chat.invoke(messages).content
+
+def llama_query_refiner(product_profile):
+    chat =  ChatGroq(temperature=.5, model_name="llama3-70b-8192")
     template = f"""
         Your task is to generate 3 different company personas for the given products. Each persona should be an short sentence that describes a company that would be interested in buying the product.
         Each query MUST tackle the question from a different viewpoint, we want to get a variety of RELEVANT search results.

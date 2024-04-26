@@ -1,12 +1,11 @@
-# me2b
-# Project Name
+# Me2B
+*Disclaimer: This is a school project.*
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## Description
-
-Just upload a PDF describing your product and Me2B connects you with leads from the Hive, our database of thousands real companies.
--  Generate a variety of buyer profiles for your product using state of the models (Llama3 80B, Mixtral 7B, GPT 3.5 Turbo, Claude 3.0) to inform your emerging or established GTM strategies
+Just a product PDF and Me2B connects you with leads from The Hive, our database of thousands of real companies.
+- Generate a variety of buyer profiles for your product using state of the models (Llama3 80B, Mixtral 7B, GPT 3.5 Turbo, Claude 3.0) to inform your emerging or established GTM strategies
 - Find qualified leads for your product and develop the right content for the right companies with our Me2B Bot
 - Discover new opportunites that fit in your existing ICP and chat about them with Me2B Bot
 
@@ -14,25 +13,20 @@ Just upload a PDF describing your product and Me2B connects you with leads from 
 
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
 - [License](#license)
 
 ## Installation
 
-Fork this repo and provide model API keys via a .env file.
+Fork this repo and provide model API keys via .env file.
 
-## Usage
+## Demo
 
-### Upload a Product PDF
-
-### Select a product and model
-
-### Discuss matches
-
-**Buzzing**
-
-
+[Loom on using Me2B to find company matches and compose outreach](https://www.loom.com/share/4db734ddbca94259a236356ff195762c?sid=f8078791-901d-4f36-be1d-a1ba9f0d8966)
 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+## Contributors
+
+Adwaith Korapati, Vishnu Rao-Sharma, Faris Sumadi

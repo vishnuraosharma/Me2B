@@ -39,6 +39,7 @@ from pandas.api.types import (
     is_numeric_dtype,
     is_object_dtype,
 )
+from PyPDF2 import PdfReader
 
 
 st.set_page_config(page_title="Me2B", page_icon=":bee:", layout="wide")
@@ -226,6 +227,7 @@ groq_api_key = os.getenv("GROQ_API_KEY")
 
 st.session_state.client = OpenAI(api_key=openai_api_key)
 
+
 ####################
 ## PINCONE
 ####################
@@ -256,31 +258,32 @@ if 'product_data_tbl' not in st.session_state:
     # fire up an instance of a snowflake connection
     st.session_state.new_session = Session.builder.configs(connection_parameters).create()
 
-    product_data = st.session_state.new_session.table("TRANSFORM_DB.TRANSFORM_SCHEMA_2.SAMPLE_PRODUCT_DATA")
+    product_data = st.session_state.new_session.table("TRANSFORM_DB.TRANSFORM_SCHEMA_2.PRODUCT_CATALOG")
 
     # Convert the Snowflake dataframe to a pandas dataframe
     st.session_state.product_data_tbl = product_data.toPandas()
 
     # Rename the columns
     st.session_state.product_data_tbl.columns = ['ID','Company Name','Product Name', 'Product Profile']
+    # Convert the product profile to a dictionary for each row
+    st.session_state.product_data_tbl['Product Profile'] = st.session_state.product_data_tbl['Product Profile'].apply(lambda x: json.loads(x))
     st.session_state.product_names = st.session_state.product_data_tbl["Product Name"].unique()
+    
+if 'company_data_tbl' not in st.session_state:
     
     st.session_state.color_dict = {
     'light_yellow': '#f7ebcd',
     'mustard':'#febc2e',
     'dark_yellow':'#eba301',
     'chocolate':'#78591b'
-}
+    }
 
-    company_table = st.session_state.new_session.table("TRANSFORM_DB.TRANSFORM_SCHEMA_2.companiesdedupeddata")
-    persona_table = st.session_state.new_session.table("TRANSFORM_DB.TRANSFORM_SCHEMA_2.personas")
-
-    # Convert the Snowflake dataframe to a pandas dataframe
-    st.session_state.company_data_tbl = company_table.toPandas()
-    st.session_state.persona_data_tbl = persona_table.toPandas()
-
-
-
+    
+    st.session_state.company_data_tbl = st.session_state.new_session.table("TRANSFORM_DB.TRANSFORM_SCHEMA_2.companiesdedupeddata")
+    st.session_state.company_data_tbl = st.session_state.company_data_tbl.toPandas()
+    st.session_state.persona_data_tbl = st.session_state.new_session.table("TRANSFORM_DB.TRANSFORM_SCHEMA_2.personas")
+    st.session_state.persona_data_tbl = st.session_state.persona_data_tbl .toPandas()
+    
     # Rename the columns
     st.session_state.company_data_tbl.columns = ['WEBSITE','HANDLE','NAME','TYPE','INDUSTRY','SIZE','FOUNDED','COUNTRY_CODE','CITY','STATE','UID','SCRAPPEDDATE','SCRAPPEDDATA','ROWNUM']
     
@@ -300,6 +303,12 @@ if 'product_data_tbl' not in st.session_state:
 
     # Rename country codes column to country
     st.session_state.company_data_tbl.rename(columns={'COUNTRY_CODE':'COUNTRY'}, inplace=True)
+    # Convert the Snowflake dataframe to a pandas dataframe
+
+    
+
+
+
 
 
     #st.session_state.company_data_tbl['FOUNDED'] = st.session_stat e.company_data_tbl['FOUNDED'].replace(0, pd.NA)
@@ -337,7 +346,7 @@ with talk:
     curr_product = st.sidebar.selectbox("Select one of your products", st.session_state.product_names, key="curr_prod", on_change=refresh_all_chats_and_delete_selected_product)
     if 'product_id' not in st.session_state:
         st.session_state.product_id = st.session_state.product_data_tbl[st.session_state.product_data_tbl["Product Name"] == curr_product]["ID"].values[0]
-        st.session_state.product_profile_json = json.loads(dict(st.session_state.product_data_tbl[st.session_state.product_data_tbl["Product Name"] == curr_product]["Product Profile"])[st.session_state.product_id])
+        st.session_state.product_profile_json = list(dict(st.session_state.product_data_tbl[st.session_state.product_data_tbl["Product Name"] == curr_product]["Product Profile"]).values())[0]
 
         print(st.session_state.product_profile_json)
     
@@ -382,7 +391,6 @@ with talk:
             st.sidebar.warning("""To match your product to a company, we use your product data to generate a variety of potential buyer profiles.\n
                                             \nHit the **buzz** button to create new ones.""")        
             st.sidebar.write(st.session_state.open_ai_refined_queries)
-            input
             if st.sidebar.button("Buzz"):
                 del st.session_state.open_ai_refined_queries
                 del st.session_state.open_ai_matches
@@ -409,7 +417,7 @@ with talk:
         # Render current messages from StreamlitChatMessageHistory
         for msg in st.session_state.msgs_open_ai.messages:
             if msg.type == "ai":
-                st.chat_message(msg.type,avatar="🐝").write(msg.content)
+                st.chat_message(msg.type,avatar=("me2b.png")).write(msg.content)
             else:
                 st.chat_message(msg.type,avatar="👤").write(msg.content)
 
@@ -479,7 +487,7 @@ with talk:
         # Render current messages from StreamlitChatMessageHistory
         for msg in st.session_state.msgs_claude.messages:
             if msg.type == "ai":
-                st.chat_message(msg.type,avatar="🐝").write(msg.content)
+                st.chat_message(msg.type,avatar=("me2b.png")).write(msg.content)
             else:
                 st.chat_message(msg.type,avatar="👤").write(msg.content)
 
@@ -550,7 +558,7 @@ with talk:
         # Render current messages from StreamlitChatMessageHistory
         for msg in st.session_state.msgs_mistral.messages:
             if msg.type == "ai":
-                st.chat_message(msg.type,avatar="🐝").write(msg.content)
+                st.chat_message(msg.type,avatar=("me2b.png")).write(msg.content)
             else:
                 st.chat_message(msg.type,avatar="👤").write(msg.content)
 
@@ -615,7 +623,7 @@ with talk:
         # Render current messages from StreamlitChatMessageHistory
         for msg in st.session_state.msgs_llama3.messages:
             if msg.type == "ai":
-                st.chat_message(msg.type,avatar="🐝").write(msg.content)
+                st.chat_message(msg.type,avatar=("me2b.png")).write(msg.content)
             else:
                 st.chat_message(msg.type,avatar="👤").write(msg.content)
 
@@ -828,7 +836,91 @@ with view:
         st.rerun()
     
 
+def stream_json(json_data):
+    
+    
+    for row in json_data:
+        if row == 'Product_name':
+            row = 'Product name'
+        if row == 'Company_name':
+            row = 'Company name'
+        yield ('**'+row + '**:' +'\n')
+        if row == 'Product name':
+            row = 'Product_name'
+        if row == 'Company name':
+            row = 'Company_name' 
+        if json_data[row] == None:
+            yield('Not found')
+        else:
+            for token in json_data[row].split():
+                yield(' '+token)
+                time.sleep(0.1)
+        yield('\n\n')
+    
+        
+        
+
 with upload:
     
     st.title('Upload Product Data')
-    st.table(st.session_state.product_data_tbl)
+    st.warning("Here's a peak at products that have been already been loaded :bee:. \n\nUpload a PDF to **add a new product** to your colony.")
+    st.dataframe(st.session_state.product_data_tbl[['Company Name','Product Name']], use_container_width=True, hide_index=True)
+
+    if "file_uploader_key" not in st.session_state:
+        st.session_state["file_uploader_key"] = 0
+
+    if "uploaded_files" not in st.session_state:
+        st.session_state["uploaded_files"] = []
+
+    files = st.file_uploader(
+        "Upload a PDF file",
+        type="pdf",
+        key=st.session_state["file_uploader_key"],
+    )
+
+    if files:
+        # Read PDF file
+        reader = PdfReader(files)
+        num_pages = len(reader.pages)
+        st.divider()
+
+        # Extract text from each page and write to a file
+        with st.spinner('Extracting key data from your Product PDF...'):
+            with open('product.txt', 'w', encoding='utf-8') as p:
+                for page_num in range(num_pages):
+                    page = reader.pages[page_num]
+                    text = page.extract_text()
+                    p.write(f"{text}\n\n")
+        
+            # Read extracted text
+            with open('product.txt', 'r', encoding='utf-8') as p:
+                product = p.read()
+                
+            try:
+                data = parsepdf(product,client= st.session_state.client)
+                os.remove('product.txt')
+                st.subheader(f"Here's the honey we squeezed out of your {num_pages}-page PDF :honey_pot:")
+                
+            except Exception as e:
+                st.error(f"Error parsing PDF: {e}")
+
+            st.write_stream(stream_json(data))
+            st.session_state.flag = False
+            st.success("Product data uploaded successfully!")
+            time.sleep(7)
+            st.session_state.flag = True
+
+    if 'flag' in st.session_state:
+        st.session_state["file_uploader_key"] += 1
+        del st.session_state["flag"]
+        del st.session_state.product_data_tbl
+        st.rerun()
+
+        
+    
+
+            
+            
+
+
+        

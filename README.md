@@ -21,7 +21,7 @@ Fork this repo and provide model API keys via .env file.
 
 ## Demo
 
-[Loom on using Me2B to find company matches and compose outreach](https://www.loom.com/share/4db734ddbca94259a236356ff195762c?sid=f8078791-901d-4f36-be1d-a1ba9f0d8966)
+[Quick Me2B Demo](https://www.loom.com/share/4db734ddbca94259a236356ff195762c?sid=f8078791-901d-4f36-be1d-a1ba9f0d8966)
 
 ## License
 

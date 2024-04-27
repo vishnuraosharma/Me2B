@@ -1,5 +1,5 @@
 # Me2B
-*Disclaimer: This is a school project.*
+*This is a school project.*
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 

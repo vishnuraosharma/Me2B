@@ -1,5 +1,5 @@
 # Me2B
-*This is a school project.*
+*This is a school project completed for a course in Data Engineering with LLMs.*
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
